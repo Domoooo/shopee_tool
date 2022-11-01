@@ -1,24 +1,54 @@
 """ Shopee Tool """
 import sys
 import os
+from datetime import date
+from time import sleep
+
+import tkinter as tk
+from tkinter import filedialog
+
 from openpyxl.styles import PatternFill, Font, Border, Side, Alignment
 from openpyxl import load_workbook
 
-sys.stdout.write("Example：1月30日 -> 0130\n")
-date_today = input("請輸入今天的日期：")
-date_begin = input("請輸入報表的起始日期：")
-date_end = input("請輸入報表的結束日期：")
+root = tk.Tk()
+root.withdraw()
 
-ORDERS_FOLDER = input("請輸入報表存放的資料夾：")
-TEMPLATE_PATH = input("請輸入模板存放的資料夾：")
-TEMPLATE_FILE_NAME = 'Shopee_template.xlsx'
+DATE_TODAY = date.today()
+sys.stdout.write(f"今天是{DATE_TODAY}\n")
 
 # 路徑懶得處理 不要有中文
-TODAY_ORDERS = f'Order.all.2022{date_begin}_2022{date_end}.xlsx'
-TODAY_ORDERS_FILE_PATH = os.path.join(ORDERS_FOLDER, TODAY_ORDERS)
+# 路徑懶得處理 不要有中文
+# 路徑懶得處理 不要有中文
+
+sys.stdout.write("請選擇模板\n")
+TEMPLATE_FILE_NAME = filedialog.askopenfilename()
+if TEMPLATE_FILE_NAME == '':
+    sys.stderr.write("你沒有選擇「模板」，工具將在5秒後自動退出")
+    sys.stderr.flush()
+    sleep(5)
+    sys.exit()
+sys.stdout.write(f"模板在：{TEMPLATE_FILE_NAME}\n")
+
+sys.stdout.write("請選擇報表存放的資料夾\n")
+ORDERS_FOLDER = filedialog.askdirectory()
+if ORDERS_FOLDER == '':
+    sys.stderr.write("你沒有選擇「報表存放的資料夾」，工具將在5秒後自動退出")
+    sys.stderr.flush()
+    sleep(5)
+    sys.exit()
+sys.stdout.write(f"報表存放在：{ORDERS_FOLDER}\n")
+
+sys.stdout.write("請選擇報表\n")
+TODAY_ORDERS_FILE_PATH = filedialog.askopenfilename()
+if TODAY_ORDERS_FILE_PATH == '':
+    sys.stderr.write("你沒有選擇「報表」，工具將在5秒後自動退出")
+    sys.stderr.flush()
+    sleep(5)
+    sys.exit()
+sys.stdout.write(f"報表在：{TODAY_ORDERS_FILE_PATH}\n")
 
 # 今日訂單存放位置
-SAVE_FOLDER_PATH = os.path.join(ORDERS_FOLDER, f'2022{date_today}')
+SAVE_FOLDER_PATH = os.path.join(ORDERS_FOLDER, str(DATE_TODAY))
 if not os.path.exists(SAVE_FOLDER_PATH):
     os.mkdir(SAVE_FOLDER_PATH)
 
@@ -73,7 +103,8 @@ while ROW < len(consumer_lst):
         continue
 
     # 讀取模板
-    sole_order = load_workbook(os.path.join(TEMPLATE_PATH, TEMPLATE_FILE_NAME))
+    # sole_order = load_workbook(os.path.join(TEMPLATE_PATH, TEMPLATE_FILE_NAME))
+    sole_order = load_workbook(TEMPLATE_FILE_NAME)
 
     # 指定第一個工作頁
     current_order = sole_order[sole_order.sheetnames[0]]
@@ -105,12 +136,12 @@ while ROW < len(consumer_lst):
     cur_order_num = consumer_lst[ROW][0]
 
     # 統計一次買多少件商品
-    if SAME_ORDER_ROW + 1 != len(consumer_lst):
+    if SAME_ORDER_ROW + 1 <= len(consumer_lst):
         while consumer_lst[SAME_ORDER_ROW + 1][0] == cur_order_num:
-            if SAME_ORDER_ROW == len(consumer_lst):
-                break
             SAME_ORDER_COUNT += 1
             SAME_ORDER_ROW += 1
+            if SAME_ORDER_ROW + 1 >= len(consumer_lst):
+                break
 
     GOODS_INDEX_BEGIN = 6
     GOODS_INDEX_END = 6 + SAME_ORDER_COUNT
