@@ -16,12 +16,10 @@ root.withdraw()
 DATE_TODAY = date.today()
 sys.stdout.write(f"今天是{DATE_TODAY}\n")
 
-# 路徑懶得處理 不要有中文
-# 路徑懶得處理 不要有中文
-# 路徑懶得處理 不要有中文
-
-sys.stdout.write("請選擇模板\n")
-TEMPLATE_FILE_NAME = filedialog.askopenfilename()
+input("請選擇模板 (按下任意鍵繼續)")
+TEMPLATE_FILE_NAME = filedialog.askopenfilename(
+    initialfile=r'N:\EComm\LENA-EC各平台交接\shopeetool\Shopee_template.xlsx',
+    title='請選擇模板(shopee_template.xlsx)')
 if TEMPLATE_FILE_NAME == '':
     sys.stderr.write("你沒有選擇「模板」，工具將在5秒後自動退出")
     sys.stderr.flush()
@@ -29,8 +27,9 @@ if TEMPLATE_FILE_NAME == '':
     sys.exit()
 sys.stdout.write(f"模板在：{TEMPLATE_FILE_NAME}\n")
 
-sys.stdout.write("請選擇報表存放的資料夾\n")
-ORDERS_FOLDER = filedialog.askdirectory()
+input("請選擇報表存放的資料夾 (按下任意鍵繼續)")
+ORDERS_FOLDER = filedialog.askdirectory(initialdir=r'N:\EComm\LENA-EC各平台交接\每日蝦皮訂單處理',
+                                        title='請選擇報表存放的資料夾')
 if ORDERS_FOLDER == '':
     sys.stderr.write("你沒有選擇「報表存放的資料夾」，工具將在5秒後自動退出")
     sys.stderr.flush()
@@ -38,8 +37,10 @@ if ORDERS_FOLDER == '':
     sys.exit()
 sys.stdout.write(f"報表存放在：{ORDERS_FOLDER}\n")
 
-sys.stdout.write("請選擇報表\n")
-TODAY_ORDERS_FILE_PATH = filedialog.askopenfilename()
+input("請選擇報表 (按下任意鍵繼續)")
+TODAY_ORDERS_FILE_PATH = filedialog.askopenfilename(
+    initialdir=r'N:\EComm\LENA-EC各平台交接\每日蝦皮訂單處理',
+    title='請選擇報表 (EX:Order.all.20220101_20221231.xlsx)')
 if TODAY_ORDERS_FILE_PATH == '':
     sys.stderr.write("你沒有選擇「報表」，工具將在5秒後自動退出")
     sys.stderr.flush()
@@ -136,7 +137,7 @@ while ROW < len(consumer_lst):
     cur_order_num = consumer_lst[ROW][0]
 
     # 統計一次買多少件商品
-    if SAME_ORDER_ROW + 1 <= len(consumer_lst):
+    if SAME_ORDER_ROW + 1 < len(consumer_lst):
         while consumer_lst[SAME_ORDER_ROW + 1][0] == cur_order_num:
             SAME_ORDER_COUNT += 1
             SAME_ORDER_ROW += 1
@@ -231,8 +232,7 @@ while ROW < len(consumer_lst):
     # 買家姓名
     CONSUMER_NAME = str(consumer_lst[ROW][1]).replace("*", "x")
 
-    CURRENT_ORDER_FILE_NAME = f'Shopee_{CURRENT_ORDER_DATE}_{SHIPPING_METHOD}_\
-{str(consumer_lst[ROW][0])}_{CONSUMER_NAME}.xlsx'
+    CURRENT_ORDER_FILE_NAME = f'Shopee_{CURRENT_ORDER_DATE}_{SHIPPING_METHOD}_{str(consumer_lst[ROW][0])}_{CONSUMER_NAME}.xlsx'
 
     SAVE_FILE_PATH = os.path.join(SAVE_FOLDER_PATH, CURRENT_ORDER_FILE_NAME)
     sole_order.save(SAVE_FILE_PATH)
