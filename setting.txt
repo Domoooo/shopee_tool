@@ -1,0 +1,12 @@
+# 模板的位置
+# TEMPLATE_DEFAULT_FILE=/Users/huly/Documents/demo/Shopee_template.xlsx
+TEMPLATE_DEFAULT_FILE=自己改
+
+# 全部訂單拆開之後, 你想要把它們放在哪個資料夾
+# ORDERS_SAVE_DIR=/Users/huly/Documents/demo/每日蝦皮訂單處理
+ORDERS_SAVE_DIR=自己改
+
+
+# 蝦皮後台下載的報表, 你放在哪個資料夾
+# ORDERS_DEFAULT_DIR=/Users/huly/Documents/demo/每日蝦皮訂單報表
+ORDERS_DEFAULT_DIR=自己改

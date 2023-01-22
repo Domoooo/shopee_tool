@@ -2,13 +2,18 @@
 import sys
 import os
 from datetime import date
-from time import sleep
 
 import tkinter as tk
 from tkinter import filedialog
 
+from dotenv import dotenv_values
+
 from openpyxl.styles import PatternFill, Font, Border, Side, Alignment
 from openpyxl import load_workbook
+
+from utils.utils import check_path
+
+config = dotenv_values("setting.txt")
 
 root = tk.Tk()
 root.withdraw()
@@ -16,37 +21,22 @@ root.withdraw()
 DATE_TODAY = date.today()
 sys.stdout.write(f"今天是{DATE_TODAY}\n")
 
-input("請選擇模板 (按下任意鍵繼續)")
-TEMPLATE_FILE_NAME = filedialog.askopenfilename(
-    initialfile=r'N:\EComm\LENA-EC各平台交接\shopeetool\Shopee_template.xlsx',
-    title='請選擇模板(shopee_template.xlsx)')
-if TEMPLATE_FILE_NAME == '':
-    sys.stderr.write("你沒有選擇「模板」，工具將在5秒後自動退出")
-    sys.stderr.flush()
-    sleep(5)
-    sys.exit()
-sys.stdout.write(f"模板在：{TEMPLATE_FILE_NAME}\n")
+TEMPLATE_DEFAULT_FILE = config['TEMPLATE_DEFAULT_FILE']
+ORDERS_SAVE_DIR = config['ORDERS_SAVE_DIR']
+ORDERS_DEFAULT_DIR = config['ORDERS_DEFAULT_DIR']
 
-input("請選擇報表存放的資料夾 (按下任意鍵繼續)")
-ORDERS_FOLDER = filedialog.askdirectory(initialdir=r'N:\EComm\LENA-EC各平台交接\每日蝦皮訂單處理',
-                                        title='請選擇報表存放的資料夾')
-if ORDERS_FOLDER == '':
-    sys.stderr.write("你沒有選擇「報表存放的資料夾」，工具將在5秒後自動退出")
-    sys.stderr.flush()
-    sleep(5)
-    sys.exit()
-sys.stdout.write(f"報表存放在：{ORDERS_FOLDER}\n")
+input("請選擇模板 EX：shopee_template.xlsx (按下ENTER鍵繼續)")
+TEMPLATE_FILE_NAME = filedialog.askopenfilename(initialfile=TEMPLATE_DEFAULT_FILE,
+                                                title='請選擇模板(shopee_template.xlsx)')
+check_path(TEMPLATE_FILE_NAME, '模板')
 
-input("請選擇報表 (按下任意鍵繼續)")
-TODAY_ORDERS_FILE_PATH = filedialog.askopenfilename(
-    initialdir=r'N:\EComm\LENA-EC各平台交接\每日蝦皮訂單處理',
-    title='請選擇報表 (EX:Order.all.20220101_20221231.xlsx)')
-if TODAY_ORDERS_FILE_PATH == '':
-    sys.stderr.write("你沒有選擇「報表」，工具將在5秒後自動退出")
-    sys.stderr.flush()
-    sleep(5)
-    sys.exit()
-sys.stdout.write(f"報表在：{TODAY_ORDERS_FILE_PATH}\n")
+input("請選擇報表存放的資料夾 (按下ENTER鍵繼續)")
+ORDERS_FOLDER = filedialog.askdirectory(initialdir=ORDERS_SAVE_DIR, title='請選擇報表存放的資料夾')
+check_path(ORDERS_FOLDER, '報表存放的資料夾')
+
+input("請選擇報表 EX：Order.all.20220101_20221231.xlsx (按下ENTER鍵繼續)")
+TODAY_ORDERS_FILE_PATH = filedialog.askopenfilename(initialdir=ORDERS_DEFAULT_DIR, title='請選擇報表')
+check_path(TODAY_ORDERS_FILE_PATH, '報表')
 
 # 今日訂單存放位置
 SAVE_FOLDER_PATH = os.path.join(ORDERS_FOLDER, str(DATE_TODAY))
@@ -157,7 +147,15 @@ while ROW < len(consumer_lst):
                                                                    bottom=medium)
 
     for g in range(GOODS_INDEX_BEGIN, GOODS_INDEX_END + 1):
-        current_order[f'A{g}'] = current_order[f'A{g}'].value.replace(" ToysRUs玩具反斗城", "")
+        product_name_suffix = current_order[f'A{g}'].value.split()[-1]
+        if product_name_suffix == "ToysRUs玩具反斗城":
+            current_order[f'A{g}'] = current_order[f'A{g}'].value.replace(" ToysRUs玩具反斗城", "")
+        elif product_name_suffix == "玩具反斗城":
+            current_order[f'A{g}'] = current_order[f'A{g}'].value.replace(" 玩具反斗城", "")
+
+        # current_order[f'A{g}'] = current_order[f'A{g}'].value.replace(" ToysRUs玩具反斗城", "")
+        # current_order[f'A{g}'] = current_order[f'A{g}'].value.replace(" 玩具反斗城", "")
+        
         current_order[f'A{g}'].alignment = Alignment(wrap_text=True)
 
         current_order[f'C{g}'].alignment = Alignment(horizontal="center", vertical="center")
