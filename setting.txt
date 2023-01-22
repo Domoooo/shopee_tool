@@ -10,3 +10,5 @@ ORDERS_SAVE_DIR=自己改
 # 蝦皮後台下載的報表, 你放在哪個資料夾
 # ORDERS_DEFAULT_DIR=/Users/huly/Documents/demo/每日蝦皮訂單報表
 ORDERS_DEFAULT_DIR=自己改
+
+# test
